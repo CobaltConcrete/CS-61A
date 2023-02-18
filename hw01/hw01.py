@@ -14,9 +14,9 @@ def a_plus_abs_b(a, b):
     3
     """
     if b < 0:
-        f = _____
+        f = sub
     else:
-        f = _____
+        f = add
     return f(a, b)
 
 
@@ -44,7 +44,7 @@ def two_of_three(i, j, k):
     >>> two_of_three(5, 5, 5)
     50
     """
-    return _____
+    return i**2 + j**2 + k**2 - max(i, j, k) ** 2
 
 
 def two_of_three_syntax_check():
@@ -68,12 +68,19 @@ def largest_factor(n):
     >>> largest_factor(13) # factor is 1 since 13 is prime
     1
     """
-    "*** YOUR CODE HERE ***"
+    for i in range(n - 1, 0, -1):
+        if n % i == 0:
+            return i
 
 
 def hailstone(n):
     """Print the hailstone sequence starting at n and return its
     length.
+
+    Pick a positive integer n as the start.
+    If n is even, divide it by 2.
+    If n is odd, multiply it by 3 and add 1.
+    Continue this process until n is 1.
 
     >>> a = hailstone(10)
     10
@@ -90,4 +97,22 @@ def hailstone(n):
     >>> b
     1
     """
-    "*** YOUR CODE HERE ***"
+    count = 0
+    while n > 0:
+        print(int(n))
+        count += 1
+        
+        # if n is even
+        if n % 2 == 0:
+            n /= 2
+            continue
+            
+        # elif n is odd and n != 1
+        elif n != 1:
+            n = n * 3 + 1
+            continue
+            
+        # elif n == 1
+        break
+
+    return count
