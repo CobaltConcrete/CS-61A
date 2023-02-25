@@ -26,6 +26,17 @@ def num_eights(n):
     """
     "*** YOUR CODE HERE ***"
 
+    def find_eights(n, count):
+        if n <= 0:
+            return count
+
+        if n % 10 == 8:
+            return find_eights(n // 10, count + 1)
+
+        return find_eights(n // 10, count)
+
+    return find_eights(abs(n), 0)
+
 
 def pingpong(n):
     """Return the nth element of the ping-pong sequence.
@@ -61,6 +72,18 @@ def pingpong(n):
     True
     """
     "*** YOUR CODE HERE ***"
+
+    def count(index, value, change):
+        if index == n:
+            return value
+        
+        if index % 8 == 0 or num_eights(index) > 0:
+            return count(index + 1, value - change, -change)
+        
+        else:
+            return count(index + 1, value + change, change)
+
+    return count(1, 1, 1)
 
 
 def next_larger_coin(coin):
@@ -117,3 +140,17 @@ def count_coins(change):
     True
     """
     "*** YOUR CODE HERE ***"
+
+    def count_partitions(change, coin):
+        if change == 0:
+            return 1
+        
+        elif change < 0 or coin == None:
+            return 0
+        
+        else:
+            with_coin = count_partitions(change - coin, coin)
+            without_coin = count_partitions(change, next_larger_coin(coin))
+            return with_coin + without_coin
+
+    return count_partitions(change, 1)
