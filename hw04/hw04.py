@@ -1,4 +1,4 @@
-passphrase = '*** PASSPHRASE HERE ***'
+passphrase = "*** PASSPHRASE HERE ***"
 
 
 def midsem_survey(p):
@@ -8,7 +8,8 @@ def midsem_survey(p):
     '3d9f1125b109b311959d068240016badb874603eab75302a445e1a50'
     """
     import hashlib
-    return hashlib.sha224(p.encode('utf-8')).hexdigest()
+
+    return hashlib.sha224(p.encode("utf-8")).hexdigest()
 
 
 HW_SOURCE_FILE = __file__
@@ -18,12 +19,12 @@ def mobile(left, right):
     """Construct a mobile from a left arm and a right arm."""
     assert is_arm(left), "left must be a arm"
     assert is_arm(right), "right must be a arm"
-    return ['mobile', left, right]
+    return ["mobile", left, right]
 
 
 def is_mobile(m):
     """Return whether m is a mobile."""
-    return type(m) == list and len(m) == 3 and m[0] == 'mobile'
+    return type(m) == list and len(m) == 3 and m[0] == "mobile"
 
 
 def left(m):
@@ -41,12 +42,12 @@ def right(m):
 def arm(length, mobile_or_planet):
     """Construct a arm: a length of rod with a mobile or planet at the end."""
     assert is_mobile(mobile_or_planet) or is_planet(mobile_or_planet)
-    return ['arm', length, mobile_or_planet]
+    return ["arm", length, mobile_or_planet]
 
 
 def is_arm(s):
     """Return whether s is a arm."""
-    return type(s) == list and len(s) == 3 and s[0] == 'arm'
+    return type(s) == list and len(s) == 3 and s[0] == "arm"
 
 
 def length(s):
@@ -65,25 +66,24 @@ def planet(mass):
     """Construct a planet of some mass."""
     assert mass > 0
     "*** YOUR CODE HERE ***"
+    return ["planet", mass]
 
 
 def mass(w):
     """Select the mass of a planet."""
-    assert is_planet(w), 'must call mass on a planet'
+    assert is_planet(w), "must call mass on a planet"
     "*** YOUR CODE HERE ***"
+    return w[1]
 
 
 def is_planet(w):
     """Whether w is a planet."""
-    return type(w) == list and len(w) == 2 and w[0] == 'planet'
+    return type(w) == list and len(w) == 2 and w[0] == "planet"
 
 
 def examples():
-    t = mobile(arm(1, planet(2)),
-               arm(2, planet(1)))
-    u = mobile(arm(5, planet(1)),
-               arm(1, mobile(arm(2, planet(3)),
-                             arm(3, planet(2)))))
+    t = mobile(arm(1, planet(2)), arm(2, planet(1)))
+    u = mobile(arm(5, planet(1)), arm(1, mobile(arm(2, planet(3)), arm(3, planet(2)))))
     v = mobile(arm(4, t), arm(2, u))
     return t, u, v
 
@@ -128,6 +128,17 @@ def balanced(m):
     """
     "*** YOUR CODE HERE ***"
 
+    if is_planet(m):
+        return True
+    
+    left_arm = left(m)
+    right_arm = right(m)
+
+    left_torque = length(left_arm)*total_weight(end(left_arm))
+    right_torque = length(right_arm)*total_weight(end(right_arm))
+    return left_torque == right_torque and balanced(end(left_arm)) and balanced(end(right_arm))
+
+
 
 def totals_tree(m):
     """Return a tree representing the mobile with its total weight at the root.
@@ -159,6 +170,11 @@ def totals_tree(m):
     True
     """
     "*** YOUR CODE HERE ***"
+
+    if is_planet(m):
+            return tree(mass(m))
+
+    return tree(total_weight(m), [totals_tree(next_mobile_or_planet) for next_mobile_or_planet in [end(left(m)), end(right(m))]])
 
 
 def replace_loki_at_leaf(t, lokis_replacement):
@@ -192,6 +208,13 @@ def replace_loki_at_leaf(t, lokis_replacement):
     """
     "*** YOUR CODE HERE ***"
 
+    if is_leaf(t):
+        if label(t) == 'loki':
+            return tree(lokis_replacement)
+        return t
+    else:
+        return tree(label(t), [replace_loki_at_leaf(b, lokis_replacement) for b in branches(t)])
+
 
 def has_path(t, word):
     """Return whether there is a path in a tree where the entries along the path
@@ -223,13 +246,22 @@ def has_path(t, word):
     >>> has_path(greetings, 'hint')
     False
     """
-    assert len(word) > 0, 'no path for empty word.'
+    assert len(word) > 0, "no path for empty word."
     "*** YOUR CODE HERE ***"
+
+    def checker(t, string):
+        if string == word:
+            return True
+        elif string not in word:
+            return False
+        return any([checker(b, string + label(b)) for b in branches(t)])
+
+    return checker(t, label(t))
 
 
 def str_interval(x):
     """Return a string representation of interval x."""
-    return '{0} to {1}'.format(lower_bound(x), upper_bound(x))
+    return "{0} to {1}".format(lower_bound(x), upper_bound(x))
 
 
 def add_interval(x, y):
@@ -242,23 +274,25 @@ def add_interval(x, y):
 
 def interval(a, b):
     """Construct an interval from a to b."""
-    assert a <= b, 'Lower bound cannot be greater than upper bound'
+    assert a <= b, "Lower bound cannot be greater than upper bound"
     return [a, b]
 
 
 def lower_bound(x):
     """Return the lower bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[0]
 
 
 def upper_bound(x):
     """Return the upper bound of interval x."""
     "*** YOUR CODE HERE ***"
+    return x[1]
 
 
 def str_interval(x):
     """Return a string representation of interval x."""
-    return '{0} to {1}'.format(lower_bound(x), upper_bound(x))
+    return "{0} to {1}".format(lower_bound(x), upper_bound(x))
 
 
 def add_interval(x, y):
@@ -272,10 +306,10 @@ def add_interval(x, y):
 def mul_interval(x, y):
     """Return the interval that contains the product of any value in x and any
     value in y."""
-    p1 = x[0] * y[0]
-    p2 = x[0] * y[1]
-    p3 = x[1] * y[0]
-    p4 = x[1] * y[1]
+    p1 = lower_bound(x) * lower_bound(y)
+    p2 = lower_bound(x) * upper_bound(y)
+    p3 = upper_bound(x) * lower_bound(y)
+    p4 = upper_bound(x) * upper_bound(y)
     return [min(p1, p2, p3, p4), max(p1, p2, p3, p4)]
 
 
@@ -283,6 +317,12 @@ def sub_interval(x, y):
     """Return the interval that contains the difference between any value in x
     and any value in y."""
     "*** YOUR CODE HERE ***"
+    p1 = lower_bound(x) - lower_bound(y)
+    p2 = lower_bound(x) - upper_bound(y)
+    p3 = upper_bound(x) - lower_bound(y)
+    p4 = upper_bound(x) - upper_bound(y)
+    return [min(p1, p2, p3, p4), max(p1, p2, p3, p4)]
+
 
 
 def div_interval(x, y):
@@ -290,6 +330,7 @@ def div_interval(x, y):
     any value in y. Division is implemented as the multiplication of x by the
     reciprocal of y."""
     "*** YOUR CODE HERE ***"
+    assert lower_bound(y) > 0, "AssertionError"
     reciprocal_y = interval(1 / upper_bound(y), 1 / lower_bound(y))
     return mul_interval(x, reciprocal_y)
 
@@ -321,10 +362,11 @@ def check_par():
 
 # Tree ADT
 
+
 def tree(label, branches=[]):
     """Construct a tree with the given label value and a list of branches."""
     for branch in branches:
-        assert is_tree(branch), 'branches must be trees'
+        assert is_tree(branch), "branches must be trees"
     return [label] + list(branches)
 
 
@@ -374,7 +416,7 @@ def print_tree(t, indent=0):
       6
         7
     """
-    print('  ' * indent + str(label(t)))
+    print("  " * indent + str(label(t)))
     for b in branches(t):
         print_tree(b, indent + 1)
 
